@@ -1,12 +1,13 @@
 # Unit Material Editor
+
  A component based material editor framework for unity
 
  example:
  
-```
+```shaderlab
 Shader "Custom/Demo-BumpSpec" {
     Properties {
-    	....
+    ....
     }
     /*
     #BEGINEDITOR
@@ -69,9 +70,9 @@ Shader "Custom/Demo-BumpSpec" {
     ]
     #ENDEDITOR
     */
-    
     CustomEditor "ArtistKit.UnitMaterialEditor"
     ...
 }
 ```
- 
+
+![image](https://github.com/lujian101/UnitMaterialEditor/blob/master/images/UnitMaterialEditor.jpg)
