@@ -215,6 +215,9 @@ namespace ArtistKit {
         }
 
         void ShaderPropertiesGUI( Material material ) {
+            // Use default labelWidth
+            EditorGUIUtility.labelWidth = 0f;
+            m_MaterialEditor.SetDefaultGUIWidths();
             EditorGUI.BeginChangeCheck();
             for ( int i = 0; i < m_props.Count; ++i ) {
                 GUILayout.Space( m_props[ i ].m_uiSpace.x );
@@ -222,6 +225,7 @@ namespace ArtistKit {
                 GUILayout.Space( m_props[ i ].m_uiSpace.y );
             }
             EditorGUILayout.Space();
+            EditorGUIUtility.labelWidth = 0f;
             DrawKeywords( material );
             if ( EditorGUI.EndChangeCheck() ) {
                 var targets = m_MaterialEditor.targets;
@@ -352,6 +356,5 @@ namespace ArtistKit {
             }
             return true;
         }
-
     }
 }

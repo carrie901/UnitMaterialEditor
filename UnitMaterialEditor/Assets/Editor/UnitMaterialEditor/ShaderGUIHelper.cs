@@ -50,12 +50,48 @@ namespace ArtistKit {
             return false;
         }
 
-        public static bool Compare( String op, Vector4 a, Vector4 b ) {
-            switch ( op ) {
-            case "==":
-                return a == b;
-            case "!=":
-                return a != b;
+        public static bool Compare( String op, Vector4 a, Vector4 b, int comp ) {
+            switch ( comp ) {
+            case 1: {
+                    switch ( op ) {
+                    case "==":
+                        return a.x == b.x;
+                    case "!=":
+                        return a.x != b.x;
+                    }
+                }
+                break;
+            case 2: {
+                    Vector2 _a = a;
+                    Vector2 _b = b;
+                    switch ( op ) {
+                    case "==":
+                        return _a == _b;
+                    case "!=":
+                        return _a != _b;
+                    }
+                }
+                break;
+            case 3: {
+                    Vector3 _a = a;
+                    Vector3 _b = b;
+                    switch ( op ) {
+                    case "==":
+                        return _a == _b;
+                    case "!=":
+                        return _a != _b;
+                    }
+                }
+                break;
+            default: {
+                    switch ( op ) {
+                    case "==":
+                        return a == b;
+                    case "!=":
+                        return a != b;
+                    }
+                }
+                break;
             }
             return false;
         }
@@ -80,17 +116,23 @@ namespace ArtistKit {
             return false;
         }
 
-        public static bool ParseValue( UnitMaterialEditor gui, JSONObject obj, String fieldName, out Vector4 value ) {
+        public static bool ParseValue( UnitMaterialEditor gui, JSONObject obj, String fieldName, out Vector4 value, out int comp ) {
             var v = obj.GetField( fieldName );
+            comp = 0;
             if ( v != null && v.IsArray ) {
                 var ret = new Vector4();
                 for ( int i = 0; i < v.Count; ++i ) {
                     if ( v[ i ].IsNumber ) {
                         ret[ i ] = v[ i ].n;
+                        ++comp;
+                    } else {
+                        break;
                     }
                 }
-                value = ret;
-                return true;
+                if ( comp > 0 ) {
+                    value = ret;
+                    return true;
+                }
             }
             value = Vector4.zero;
             return false;
@@ -121,16 +163,18 @@ namespace ArtistKit {
                 }
             case MaterialProperty.PropType.Vector: {
                     Vector4 rh;
-                    if ( ShaderGUIHelper.ParseValue( gui, args, "ref", out rh ) ) {
-                        return ShaderGUIHelper.Compare( _op, prop.vectorValue, rh ) ? 1 : 0;
+                    int comp;
+                    if ( ShaderGUIHelper.ParseValue( gui, args, "ref", out rh, out comp ) ) {
+                        return ShaderGUIHelper.Compare( _op, prop.vectorValue, rh, comp ) ? 1 : 0;
                     }
                 }
                 break;
             case MaterialProperty.PropType.Color: {
                     Vector4 rh;
-                    if ( ShaderGUIHelper.ParseValue( gui, args, "ref", out rh ) ) {
+                    int comp;
+                    if ( ShaderGUIHelper.ParseValue( gui, args, "ref", out rh, out comp ) ) {
                         var c = prop.colorValue;
-                        return ShaderGUIHelper.Compare( _op, new Vector4( c.r, c.g, c.b, c.r ), rh ) ? 1 : 0;
+                        return ShaderGUIHelper.Compare( _op, new Vector4( c.r, c.g, c.b, c.r ), rh, comp ) ? 1 : 0;
                     }
                 }
                 break;

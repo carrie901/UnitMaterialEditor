@@ -30,7 +30,10 @@ namespace ArtistKit {
             if ( !ShaderGUIHelper.IsModeMatched( this, m_args ) ) {
                 return;
             }
-            m_MaterialEditor.ShaderProperty( m_prop, m_prop.displayName );
+            m_MaterialEditor.SetDefaultGUIWidths();
+            float h = m_MaterialEditor.GetPropertyHeight( m_prop, m_prop.displayName );
+            Rect r = EditorGUILayout.GetControlRect( true, h, EditorStyles.layerMaskField );
+            m_MaterialEditor.ShaderProperty( r, m_prop, m_prop.displayName );
         }
 
         protected override void OnDrawPropertiesGUI( Material material ) {
