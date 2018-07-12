@@ -7,9 +7,20 @@ namespace ArtistKit {
 
     public class ShaderGUI_Logic : UnitMaterialEditor {
 
-        public override bool GetLogicOpResult() {
-            return ShaderGUIHelper.IsModeMatched( this, m_args ) &&
-                ShaderGUIHelper.ExcuteLogicOp( this, null, m_args ) == 1;
+        public override bool GetLogicOpResult( out String returnValue ) {
+            returnValue = "false";
+            if ( ShaderGUIHelper.IsModeMatched( this, m_args ) &&
+                ShaderGUIHelper.ExcuteLogicOp( this, null, m_args ) == 1 ) {
+                returnValue = "true";
+                return true;
+            }
+            return false;
+        }
+
+        protected override String ComputeReturnValue() {
+            String returnValue;
+            GetLogicOpResult( out returnValue );
+            return returnValue;
         }
 
         protected override bool OnInitProperties( MaterialProperty[] props ) {

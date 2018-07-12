@@ -21,7 +21,7 @@ namespace ArtistKit {
         protected override bool OnInitProperties( MaterialProperty[] props ) {
             m_prop_MainTex = FindProperty( "_Mode", props );
             m_prop_MainTex = FindProperty( "_MainTex", props );
-            m_prop_MainTex_Alpha = FindProperty( "_MainTex_Alpha", props );
+            m_prop_MainTex_Alpha = FindProperty( "_MainTex_Alpha", props, false );
             m_prop_Color = FindProperty( "_Color", props );
             m_prop_Cutoff = FindProperty( "_Cutoff", props );
             m_prop_ColorKey = FindProperty( "_ColorKey", props );
@@ -42,8 +42,7 @@ namespace ArtistKit {
             SetKeyword( material, "_SPECGLOSSMAP", m_prop_SpecGlossMap != null && m_prop_SpecGlossMap.textureValue != null );
         }
 
-        protected override void OnDrawPropertiesGUI( Material material ) {
-            EditorGUIUtility.labelWidth = 0f;
+        protected override void OnDrawPropertiesGUI( Material material, MaterialProperty[] props ) {
             var gui = FindPropEditor<ShaderGUI_RenderMode>();
             var mode = gui != null ? gui._Mode : RenderMode.Opaque;
             var useAlpha = gui != null ? gui.useAlpha : false;
@@ -56,13 +55,11 @@ namespace ArtistKit {
                 EditorGUI.indentLevel--;
             }
             if ( useAlpha && m_prop_MainTex_Alpha != null ) {
-                EditorGUIUtility.labelWidth = 0f;
                 m_MaterialEditor.TexturePropertySingleLine(
                     new GUIContent( m_prop_MainTex_Alpha.displayName ),
                     m_prop_MainTex_Alpha );
             }
             if ( m_prop_BumpMap != null ) {
-                EditorGUIUtility.labelWidth = 0f;
                 m_MaterialEditor.TexturePropertySingleLine(
                     new GUIContent( m_prop_BumpMap.displayName ),
                     m_prop_BumpMap,
@@ -71,17 +68,14 @@ namespace ArtistKit {
                 );
             }
             if ( m_prop_SpecGlossMap != null ) {
-                EditorGUIUtility.labelWidth = 0f;
                 m_MaterialEditor.TexturePropertySingleLine(
                     new GUIContent( m_prop_SpecGlossMap.displayName ),
                     m_prop_SpecGlossMap,
                     m_prop_SpecColor
                 );
             } else if ( m_prop_SpecColor != null ) {
-                m_MaterialEditor.SetDefaultGUIWidths();
                 m_MaterialEditor.ShaderProperty( m_prop_SpecColor, m_prop_SpecColor.displayName );
             }
-            m_MaterialEditor.SetDefaultGUIWidths();
             if ( m_prop_Shininess != null ) {
                 m_MaterialEditor.ShaderProperty( m_prop_Shininess, m_prop_Shininess.displayName );
             }

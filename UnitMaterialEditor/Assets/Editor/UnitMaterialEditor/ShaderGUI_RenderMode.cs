@@ -321,7 +321,7 @@ namespace ArtistKit {
             }
         }
 
-        protected override void OnDrawPropertiesGUI( Material material ) {
+        protected override void OnDrawPropertiesGUI( Material material, MaterialProperty[] props ) {
             if ( m_prop_Mode != null ) {
                 EditorGUI.showMixedValue = m_prop_Mode.hasMixedValue;
                 var oldMode = ( RenderMode )m_prop_Mode.floatValue;

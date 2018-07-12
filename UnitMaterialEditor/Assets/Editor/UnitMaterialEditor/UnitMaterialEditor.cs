@@ -162,7 +162,7 @@ namespace ArtistKit {
                                         p.m_uiSpace = new Vector2( space_begin, space_end );
                                         val.GetField( out p.m_id, "id", String.Empty );
                                         p.m_args = args;
-                                        p.m_MaterialEditor = materialEditor;
+                                        p.m_MaterialEditor = m_MaterialEditor;
                                         p.m_parent = this;
                                         try {
                                             if ( p.OnInitProperties( props ) ) {
@@ -187,7 +187,13 @@ namespace ArtistKit {
             return true;
         }
 
-        protected virtual void OnDrawPropertiesGUI( Material material ) {
+        protected void DrawPropertiesGUI( Material material, MaterialProperty[] props ) {
+            if ( OnInitProperties( props ) ) {
+                OnDrawPropertiesGUI( material, props );
+            }
+        }
+
+        protected virtual void OnDrawPropertiesGUI( Material material, MaterialProperty[] props ) {
         }
 
         protected virtual void OnMaterialChanged( Material material ) {
@@ -214,18 +220,14 @@ namespace ArtistKit {
             OnMaterialChanged( material );
         }
 
-        void ShaderPropertiesGUI( Material material ) {
-            // Use default labelWidth
-            EditorGUIUtility.labelWidth = 0f;
-            m_MaterialEditor.SetDefaultGUIWidths();
+        void ShaderPropertiesGUI( Material material, MaterialProperty[] props ) {
             EditorGUI.BeginChangeCheck();
             for ( int i = 0; i < m_props.Count; ++i ) {
                 GUILayout.Space( m_props[ i ].m_uiSpace.x );
-                m_props[ i ].OnDrawPropertiesGUI( material );
+                m_props[ i ].DrawPropertiesGUI( material, props );
                 GUILayout.Space( m_props[ i ].m_uiSpace.y );
             }
             EditorGUILayout.Space();
-            EditorGUIUtility.labelWidth = 0f;
             DrawKeywords( material );
             if ( EditorGUI.EndChangeCheck() ) {
                 var targets = m_MaterialEditor.targets;
@@ -244,7 +246,7 @@ namespace ArtistKit {
             EditorGUILayout.Separator();
             GUI.enabled = false;
             try {
-                var newKeywords = EditorGUILayout.TextField( "Keywords", keywords );
+                var newKeywords = EditorGUILayout.TextArea( keywords );
                 if ( newKeywords != keywords ) {
                     var key = newKeywords.Split( ' ', ',', ';' );
                     for ( int i = 0; i < key.Length; ++i ) {
@@ -268,7 +270,7 @@ namespace ArtistKit {
                     MaterialChanged( material );
                     this.m_FirstTimeApply = false;
                 }
-                ShaderPropertiesGUI( material );
+                ShaderPropertiesGUI( material, props );
             }
         }
 
@@ -326,9 +328,26 @@ namespace ArtistKit {
             return null;
         }
 
+        public bool GetLogicOpResult() {
+            String returnValue;
+            return GetLogicOpResult( out returnValue );
+        }
 
-        public virtual bool GetLogicOpResult() {
+        public virtual bool GetLogicOpResult( out String returnValue ) {
+            returnValue = String.Empty;
             return false;
+        }
+
+        protected virtual String ComputeReturnValue() {
+            return "null";
+        }
+
+        public virtual String GetReturnValue() {
+            String returnValue;
+            if ( GetLogicOpResult( out returnValue ) ) {
+                return returnValue;
+            }
+            return String.Empty;
         }
 
         public virtual bool GetBoolTestResult() {
@@ -343,7 +362,8 @@ namespace ArtistKit {
                         if ( !String.IsNullOrEmpty( id ) ) {
                             var ui = FindPropEditor<UnitMaterialEditor>( id );
                             if ( ui != null ) {
-                                var b = ui.GetLogicOpResult();
+                                var returnValue = String.Empty;
+                                var b = ui.GetLogicOpResult( out returnValue );
                                 if ( rev ) {
                                     b = !b;
                                 }

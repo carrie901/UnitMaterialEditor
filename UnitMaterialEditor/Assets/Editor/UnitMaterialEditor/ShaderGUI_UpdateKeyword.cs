@@ -10,13 +10,14 @@ namespace ArtistKit {
         String m_propName = String.Empty;
         MaterialProperty m_prop = null;
 
-        public override bool GetLogicOpResult() {
+        public override bool GetLogicOpResult( out String returnValue ) {
+            returnValue = String.Empty;
             return ShaderGUIHelper.IsModeMatched( this, m_args ) &&
                 ShaderGUIHelper.ExcuteLogicOp( this, m_prop, m_args ) == 1;
         }
 
         protected override bool OnInitProperties( MaterialProperty[] props ) {
-            m_prop = ShaderGUI.FindProperty( m_propName, props );
+            m_prop = ShaderGUI.FindProperty( m_propName, props, false );
             return m_prop != null;
         }
 
