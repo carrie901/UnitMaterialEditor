@@ -54,11 +54,11 @@
             }
         },
         {
-            "editor" : "RenderMode",
+            "editor" : "RenderMode"
         },
         {
             "editor" : "UpdateKeyword",
-            "id" : "id_normalmap",
+            "id" : "use_BumpMap",
             "args" : {
                 "name" : "_BumpMap",
                 "keyword" : "_NORMALMAP"
@@ -66,37 +66,75 @@
         },
         {
             "editor" : "UpdateKeyword",
-            "id" : "id_use_alpha_texture",
+            "id" : "use_External_Alpha",
             "args" : {
                 "mode" : "Transparent | Cutout",
                 "name" : "_MainTex_Alpha",
                 "keyword" : "_USE_EXTERNAL_ALPHA",
             }
-        },
-        {
+        },        
+		{
             "editor" : "UpdateKeyword",
-            "id" : "id_use_specglossmap",
+            "id" : "use_SpecColor",
             "args" : {
-                "name" : "_SpecGlossMap",
-                "keyword" : "_SPECGLOSSMAP"
+                "name" : "_SpecColor",
+				"op" : ">",
+				"ref" : [0,0,0],
+                "keyword" : "_USE_SPECULAR",
             }
         },
         {
             "editor" : "Logic",
-            "id" : "id_use_normal_alpah",
+            "id" : "use_Normal_Alpha",
             "args" : {
                 "op" : "&&",
-                "arg0" : "[id_normalmap]",
-                "arg1" : "[id_use_alpha_texture]",
+                "arg0" : "[use_BumpMap]",
+                "arg1" : "[use_External_Alpha]",
             }
         },
         {
             "editor" : "HelpBox",
             "args" : {
                 "mode" : "Cutout",
-                "btest" : "[id_use_normal_alpah]",
+                "if" : "[use_Normal_Alpha]",
                 "type" : "info",
                 "text" : "Use Normalmap with an external alpha texture."
+            }
+        },
+		{
+			"editor" : "GetTextureFormat",
+			"id" : "fmt_MainTex",
+			"args" : {
+                "name" : "_MainTex",
+            }
+		},
+		{
+			"editor" : "GetTextureFormat",
+			"id" : "fmt_MainTex_Alpha",
+			"args" : {
+                "name" : "_MainTex_Alpha",
+            }
+		},
+		{
+			"editor" : "GetTextureFormat",
+			"id" : "fmt_BumpMap",
+			"args" : {
+                "name" : "_BumpMap",
+            }
+		},
+		{
+			"editor" : "GetTextureFormat",
+			"id" : "fmt_SpecGlossMap",
+			"args" : {
+                "name" : "_SpecGlossMap",
+            }
+		},
+		{
+            "editor" : "HelpBox",
+            "args" : {
+                "type" : "info",
+                "text" : "Texture Format: _BumpMap = {0}, _SpecGlossMap = {1}, _MainTex_Alpha = {2}",
+				"params" : [ "fmt_BumpMap", "fmt_SpecGlossMap", "fmt_MainTex_Alpha" ]
             }
         },
     ]

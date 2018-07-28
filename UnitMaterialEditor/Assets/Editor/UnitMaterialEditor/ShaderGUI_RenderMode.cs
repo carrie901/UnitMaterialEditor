@@ -211,6 +211,23 @@ namespace ArtistKit {
             return ret;
         }
 
+        static void SetRenderQueue( Material material, RenderMode renderingMode ) {
+            switch ( renderingMode ) {
+            case RenderMode.Opaque:
+                material.renderQueue = -1;
+                break;
+            case RenderMode.Cutout:
+            case RenderMode.ColorKey:
+                material.renderQueue = ( int )UnityEngine.Rendering.RenderQueue.AlphaTest;
+                break;
+            case RenderMode.Transparent:
+            case RenderMode.SoftAdditive:
+            case RenderMode.Additive:
+                material.renderQueue = ( int )UnityEngine.Rendering.RenderQueue.Transparent;
+                break;
+            }
+        }
+
         void SetupMaterialWithRenderingMode( Material material, RenderMode renderingMode, bool modeChanged = true ) {
             var ok = false;
             while ( !ok ) {
@@ -318,10 +335,11 @@ namespace ArtistKit {
             }
             if ( modeChanged && _Mode != RenderMode.Custom ) {
                 _AutoRenderQueue = true;
+                SetRenderQueue( material, renderingMode );
             }
         }
 
-        protected override void OnDrawPropertiesGUI( Material material ) {
+        protected override void OnDrawPropertiesGUI( Material material, MaterialProperty[] props ) {
             if ( m_prop_Mode != null ) {
                 EditorGUI.showMixedValue = m_prop_Mode.hasMixedValue;
                 var oldMode = ( RenderMode )m_prop_Mode.floatValue;

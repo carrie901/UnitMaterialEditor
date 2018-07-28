@@ -10,15 +10,19 @@ namespace ArtistKit {
 
         List<KeyValuePair<MaterialProperty, ShaderGUI_SingleProp>> m_props = null;
 
-        protected override void OnDrawPropertiesGUI( Material material ) {
+        protected override void OnDrawPropertiesGUI( Material material, MaterialProperty[] props ) {
             if ( m_props != null ) {
                 for ( int i = 0; i < m_props.Count; ++i ) {
                     var item = m_props[ i ];
                     var defaultProp = item.Key;
                     var customProp = item.Value;
                     if ( customProp == null ) {
-                        if ( 0 == ( defaultProp.flags & MaterialProperty.PropFlags.HideInInspector ) ) {
-                            m_MaterialEditor.ShaderProperty( defaultProp, defaultProp.displayName );
+                        if ( ( defaultProp.flags & ( MaterialProperty.PropFlags.HideInInspector | MaterialProperty.PropFlags.PerRendererData ) ) == MaterialProperty.PropFlags.None ) {
+                            m_MaterialEditor.SetDefaultGUIWidths();
+                            float h = m_MaterialEditor.GetPropertyHeight( defaultProp, defaultProp.displayName );
+                            Rect r = EditorGUILayout.GetControlRect( true, h, EditorStyles.layerMaskField );
+                            m_MaterialEditor.ShaderProperty( r, defaultProp, defaultProp.displayName );
+                            m_MaterialEditor.SetDefaultGUIWidths();
                         }
                     } else {
                         customProp.DrawGUI( material );
@@ -28,7 +32,11 @@ namespace ArtistKit {
         }
 
         protected override bool OnInitProperties( MaterialProperty[] props ) {
-            m_props = new List<KeyValuePair<MaterialProperty, ShaderGUI_SingleProp>>( props.Length );
+            if ( m_props == null ) {
+                m_props = new List<KeyValuePair<MaterialProperty, ShaderGUI_SingleProp>>( props.Length );
+            } else {
+                m_props.Clear();
+            }
             var excludes = FindPropEditors<ShaderGUI_SingleProp>();
             for ( int i = 0; i < props.Length; ++i ) {
                 var name = props[ i ].name;
